@@ -7,7 +7,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { Podcast } from './entities/podcasts.entity';
+import { Podcast } from './entities/podcast.entity';
 import { PodcastsService } from './podcasts.service';
 
 @Controller('podcasts')

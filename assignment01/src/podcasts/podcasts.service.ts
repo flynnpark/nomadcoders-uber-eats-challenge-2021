@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Episode } from './entities/episode.entity';
-import { Podcast } from './entities/podcasts.entity';
+import { Podcast } from './entities/podcast.entity';
 
 @Injectable()
 class PodcastsService {
