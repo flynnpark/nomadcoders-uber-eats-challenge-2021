@@ -1,13 +1,19 @@
-import { Field, InputType } from '@nestjs/graphql';
-import { IsString } from 'class-validator';
+import { ArgsType, Field, ObjectType } from '@nestjs/graphql';
 
-@InputType()
+@ArgsType()
 export class CreatePodcastDto {
-  @Field((_) => String)
-  @IsString()
+  @Field((type) => String)
   readonly title: string;
 
-  @Field((_) => String)
-  @IsString()
+  @Field((type) => String)
   readonly category: string;
+}
+
+@ObjectType()
+export class CreatePodcastResponse {
+  @Field((type) => Number)
+  id: number;
+
+  @Field((type) => String, { nullable: true })
+  err: string | null;
 }

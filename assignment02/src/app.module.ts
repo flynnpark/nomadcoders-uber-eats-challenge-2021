@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { GraphQLModule } from '@nestjs/graphql';
-import { PodcastsModule } from './podcast/podcasts.module';
+import { PodcastsController } from './podcasts/podcasts.controllers';
+import { PodcastsService } from './podcasts/podcasts.service';
 
 @Module({
-  imports: [PodcastsModule, GraphQLModule.forRoot({ autoSchemaFile: true })],
-  controllers: [],
-  providers: [],
+  imports: [],
+  controllers: [PodcastsController],
+  providers: [PodcastsService],
 })
 export class AppModule {}

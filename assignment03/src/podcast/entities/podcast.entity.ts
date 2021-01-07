@@ -1,21 +1,19 @@
+import { Field, ObjectType } from '@nestjs/graphql';
 import { Episode } from './episode.entity';
-import { ObjectType, Field } from '@nestjs/graphql';
-import { IsString, IsNumber } from 'class-validator';
 
 @ObjectType()
 export class Podcast {
-  @Field((_) => Number)
-  @IsNumber()
+  @Field((type) => Number)
   id: number;
-  @Field((_) => String)
-  @IsString()
+
+  @Field((type) => String)
   title: string;
-  @Field((_) => String)
-  @IsString()
+
+  @Field((type) => String)
   category: string;
-  @Field((_) => Number)
-  @IsNumber()
+  @Field((type) => Number)
   rating: number;
-  @Field((_) => [Episode])
+
+  @Field((type) => [Episode])
   episodes: Episode[];
 }
