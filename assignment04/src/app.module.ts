@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { PodcastsModule } from './podcast/podcasts.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Podcast } from './podcast/entities/podcast.entity';
+import { Episode } from './podcast/entities/episode.entity';
 
 @Module({
   imports: [
@@ -12,6 +14,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       database: 'db.sqlite',
       logging: true,
       synchronize: true,
+      entities: [Podcast, Episode],
     }),
   ],
   controllers: [],
