@@ -1,5 +1,5 @@
 import { Field, ObjectType, InputType, Int, PickType } from '@nestjs/graphql';
-import { CoreOutput } from './output.dto';
+import { CoreOutput } from '../../common/dtos/output.dto';
 import { Podcast } from '../entities/podcast.entity';
 import { IsInt } from 'class-validator';
 import { Episode } from '../entities/episode.entity';

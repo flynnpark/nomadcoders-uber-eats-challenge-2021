@@ -11,7 +11,7 @@ import { UpdateEpisodeInput } from './dtos/update-episode.dto';
 import { UpdatePodcastInput } from './dtos/update-podcast.dto';
 import { Episode } from './entities/episode.entity';
 import { Podcast } from './entities/podcast.entity';
-import { CoreOutput } from './dtos/output.dto';
+import { CoreOutput } from '../common/dtos/output.dto';
 import {
   PodcastOutput,
   EpisodesOutput,

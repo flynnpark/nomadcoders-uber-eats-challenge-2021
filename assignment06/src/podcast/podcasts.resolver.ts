@@ -5,7 +5,7 @@ import {
   CreatePodcastInput,
   CreatePodcastOutput,
 } from './dtos/create-podcast.dto';
-import { CoreOutput } from './dtos/output.dto';
+import { CoreOutput } from '../common/dtos/output.dto';
 import {
   PodcastSearchInput,
   PodcastOutput,
