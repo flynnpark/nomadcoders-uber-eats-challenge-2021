@@ -21,5 +21,5 @@ export class Episode extends CoreEntity {
     onDelete: 'CASCADE',
   })
   @Field(type => Podcast)
-  podcast: Podcast;
+  podcast?: Podcast;
 }
