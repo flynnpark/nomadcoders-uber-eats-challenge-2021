@@ -1,32 +1,32 @@
-import { INestApplication } from "@nestjs/common";
-import { Test } from "@nestjs/testing";
-import { getRepositoryToken } from "@nestjs/typeorm";
-import * as request from "supertest";
-import { getConnection, Repository } from "typeorm";
-import { Podcast } from "src/podcast/entities/podcast.entity";
-import { AppModule } from "./../src/app.module";
-import { Episode } from "src/podcast/entities/episode.entity";
-import { send } from "process";
-import { User } from "src/users/entities/user.entity";
+import { INestApplication } from '@nestjs/common';
+import { Test } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import * as request from 'supertest';
+import { getConnection, Repository } from 'typeorm';
+import { Podcast } from 'src/podcast/entities/podcast.entity';
+import { AppModule } from './../src/app.module';
+import { Episode } from 'src/podcast/entities/episode.entity';
+import { send } from 'process';
+import { User } from 'src/users/entities/user.entity';
 
-const GRAPHQL_ENDPOINT = "/graphql";
+const GRAPHQL_ENDPOINT = '/graphql';
 
 const testPodcast = {
-  title: "test podcast",
-  category: "test"
+  title: 'test podcast',
+  category: 'test',
 };
 
 const testEpisode = {
-  title: "test episode",
-  category: "test"
+  title: 'test episode',
+  category: 'test',
 };
 
 const testUser = {
-  email: "flynn@flynnpark.dev",
-  password: "flynndev"
+  email: 'flynn@flynnpark.dev',
+  password: 'flynndev',
 };
 
-describe("App (e2e)", () => {
+describe('App (e2e)', () => {
   let app: INestApplication;
   let podcastsRepository: Repository<Podcast>;
   let episodesRepository: Repository<Episode>;
@@ -36,11 +36,11 @@ describe("App (e2e)", () => {
   const baseTest = () => request(app.getHttpServer()).post(GRAPHQL_ENDPOINT);
   const publicTest = (query: string) => baseTest().send({ query });
   const privateTest = (query: string) =>
-    baseTest().set("X-JWT", jwtToken).send({ query });
+    baseTest().set('X-JWT', jwtToken).send({ query });
 
   beforeAll(async () => {
     const moduleFixture = await Test.createTestingModule({
-      imports: [AppModule]
+      imports: [AppModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();
@@ -61,9 +61,9 @@ describe("App (e2e)", () => {
     app.close();
   });
 
-  describe("Podcasts Resolver", () => {
-    describe("createPodcast", () => {
-      it("should create a new podcast", () =>
+  describe('Podcasts Resolver', () => {
+    describe('createPodcast', () => {
+      it('should create a new podcast', () =>
         publicTest(`
             mutation {
               createPodcast(input: {
@@ -81,15 +81,15 @@ describe("App (e2e)", () => {
             expect(res.body.data.createPodcast.id).toBe(1);
           }));
     });
-    describe("getAllPodcasts", () => {
+    describe('getAllPodcasts', () => {
       let podcastIds: number[];
       beforeAll(async () => {
         const podcasts = await podcastsRepository.find();
         podcastIds = podcasts.map((podcast) => podcast.id);
       });
-      it("should get all podcasts", () =>
+      it('should get all podcasts', () =>
         publicTest(`
-{
+            {
               getAllPodcasts {
                 ok
                 podcasts {
@@ -102,22 +102,22 @@ describe("App (e2e)", () => {
             const {
               body: {
                 data: {
-                  getAllPodcasts: { ok, podcasts }
-                }
-              }
+                  getAllPodcasts: { ok, podcasts },
+                },
+              },
             } = res;
             const receivedPodcastIds = podcasts.map((podcast) => podcast.id);
             expect(ok).toBe(true);
             expect(receivedPodcastIds).toStrictEqual(podcastIds);
           }));
     });
-    describe("getPodcast", () => {
+    describe('getPodcast', () => {
       let podcastId: number;
       beforeAll(async () => {
         const [podcast] = await podcastsRepository.find();
         podcastId = podcast.id;
       });
-      it("should get a podcast", () =>
+      it('should get a podcast', () =>
         publicTest(`
             {
               getPodcast(input: {id: ${podcastId}}) {
@@ -135,15 +135,15 @@ describe("App (e2e)", () => {
                 data: {
                   getPodcast: {
                     ok,
-                    podcast: { id }
-                  }
-                }
-              }
+                    podcast: { id },
+                  },
+                },
+              },
             } = res;
             expect(ok).toBe(true);
             expect(id).toBe(podcastId);
           }));
-      it("should fail get a podcast", () =>
+      it('should fail get a podcast', () =>
         publicTest(`
           {
             getPodcast(input: {id: ${podcastId + 1}}) {
@@ -160,22 +160,22 @@ describe("App (e2e)", () => {
             const {
               body: {
                 data: {
-                  getPodcast: { ok, error }
-                }
-              }
+                  getPodcast: { ok, error },
+                },
+              },
             } = res;
             expect(ok).toBe(false);
             expect(error).toBe(`Podcast with id ${podcastId + 1} not found`);
           }));
     });
-    describe("updatePodcast", () => {
+    describe('updatePodcast', () => {
       const rating = 3;
       let podcastId: number;
       beforeAll(async () => {
         const [podcast] = await podcastsRepository.find();
         podcastId = podcast.id;
       });
-      it("should success to update Podcast", () => {
+      it('should success to update Podcast', () => {
         return publicTest(`
             mutation {
               updatePodcast(input: { id: ${podcastId}, payload: { rating: ${rating} } }) {
@@ -188,14 +188,14 @@ describe("App (e2e)", () => {
             const {
               body: {
                 data: {
-                  updatePodcast: { ok }
-                }
-              }
+                  updatePodcast: { ok },
+                },
+              },
             } = res;
             expect(ok).toBe(true);
           });
       });
-      it("should failed to update Podcast, becuase of getPodcast emitting error", () => {
+      it('should failed to update Podcast, becuase of getPodcast emitting error', () => {
         const errorPodcastId = 1000;
         return publicTest(`
             mutation {
@@ -210,15 +210,15 @@ describe("App (e2e)", () => {
             const {
               body: {
                 data: {
-                  updatePodcast: { ok, error }
-                }
-              }
+                  updatePodcast: { ok, error },
+                },
+              },
             } = res;
             expect(ok).toBe(false);
             expect(error).toBe(`Podcast with id ${errorPodcastId} not found`);
           });
       });
-      it("should fail to update Podcast, due to invalid payload", () => {
+      it('should fail to update Podcast, due to invalid payload', () => {
         const errorRating = 10;
         return publicTest(`
             mutation {
@@ -233,22 +233,22 @@ describe("App (e2e)", () => {
             const {
               body: {
                 data: {
-                  updatePodcast: { ok, error }
-                }
-              }
+                  updatePodcast: { ok, error },
+                },
+              },
             } = res;
             expect(ok).toBe(false);
-            expect(error).toBe("Rating must be between 1 and 5.");
+            expect(error).toBe('Rating must be between 1 and 5.');
           });
       });
     });
-    describe("createEpisode", () => {
+    describe('createEpisode', () => {
       let podcastId: number;
       beforeAll(async () => {
         const [podcast] = await podcastsRepository.find();
         podcastId = podcast.id;
       });
-      it("should success to create Episode", () => {
+      it('should success to create Episode', () => {
         return publicTest(`
             mutation {
               createEpisode(input: {
@@ -266,7 +266,7 @@ describe("App (e2e)", () => {
             expect(res.body.data.createEpisode.ok).toBe(true);
           });
       });
-      it("should fail to create Episode, because of getPodcast emitting error", () => {
+      it('should fail to create Episode, because of getPodcast emitting error', () => {
         const errorPodcastId = 1000;
         return publicTest(`
             mutation {
@@ -289,7 +289,7 @@ describe("App (e2e)", () => {
           });
       });
     });
-    describe("getEpisodes", () => {
+    describe('getEpisodes', () => {
       let podcastId: number;
       let episodeIds: number[];
       beforeAll(async () => {
@@ -298,7 +298,7 @@ describe("App (e2e)", () => {
         const episodes = await episodesRepository.find({ podcast });
         episodeIds = episodes.map((episode) => episode.id);
       });
-      it("should success to get episodes", () => {
+      it('should success to get episodes', () => {
         return publicTest(`
             {
               getEpisodes(input: { id: ${podcastId} }) {
@@ -315,16 +315,16 @@ describe("App (e2e)", () => {
             const {
               body: {
                 data: {
-                  getEpisodes: { ok, error, episodes }
-                }
-              }
+                  getEpisodes: { ok, error, episodes },
+                },
+              },
             } = res;
             const receivedEpisodeIds = episodes.map((episode) => episode.id);
             expect(ok).toBe(true);
             expect(receivedEpisodeIds).toEqual(episodeIds);
           });
       });
-      it("should failed to get episodes because of getPodcast emtting error", () => {
+      it('should failed to get episodes because of getPodcast emtting error', () => {
         const errorPodcastId = 1000;
         return publicTest(`
             {
@@ -342,17 +342,17 @@ describe("App (e2e)", () => {
             const {
               body: {
                 data: {
-                  getEpisodes: { ok, error }
-                }
-              }
+                  getEpisodes: { ok, error },
+                },
+              },
             } = res;
             expect(ok).toBe(false);
             expect(error).toBe(`Podcast with id ${errorPodcastId} not found`);
           });
       });
     });
-    describe("updateEpisode", () => {
-      const newTitle = "new title";
+    describe('updateEpisode', () => {
+      const newTitle = 'new title';
       let podcastId: number;
       let episodeId: number;
       beforeAll(async () => {
@@ -361,7 +361,7 @@ describe("App (e2e)", () => {
         const [episode] = await episodesRepository.find({ podcast });
         episodeId = episode.id;
       });
-      it("should success to update", () => {
+      it('should success to update', () => {
         return publicTest(`
             mutation {
               updateEpisode(input: {
@@ -379,14 +379,14 @@ describe("App (e2e)", () => {
             const {
               body: {
                 data: {
-                  updateEpisode: { ok }
-                }
-              }
+                  updateEpisode: { ok },
+                },
+              },
             } = res;
             expect(ok).toBe(true);
           });
       });
-      it("should failed to update, because of podcast not found", () => {
+      it('should failed to update, because of podcast not found', () => {
         const errorPodcastId = 1000;
         return publicTest(`
             mutation {
@@ -405,15 +405,15 @@ describe("App (e2e)", () => {
             const {
               body: {
                 data: {
-                  updateEpisode: { ok, error }
-                }
-              }
+                  updateEpisode: { ok, error },
+                },
+              },
             } = res;
             expect(ok).toBe(false);
             expect(error).toBe(`Podcast with id ${errorPodcastId} not found`);
           });
       });
-      it("should failed to update, because of episode not found", () => {
+      it('should failed to update, because of episode not found', () => {
         const errorEpisodeId = 1000;
         return publicTest(`
             mutation {
@@ -432,9 +432,9 @@ describe("App (e2e)", () => {
             const {
               body: {
                 data: {
-                  updateEpisode: { ok, error }
-                }
-              }
+                  updateEpisode: { ok, error },
+                },
+              },
             } = res;
             expect(ok).toBe(false);
             expect(error).toBe(
@@ -443,7 +443,7 @@ describe("App (e2e)", () => {
           });
       });
     });
-    describe("deleteEpisode", () => {
+    describe('deleteEpisode', () => {
       let podcastId: number;
       let episodeId: number;
       beforeAll(async () => {
@@ -452,7 +452,7 @@ describe("App (e2e)", () => {
         const [episode] = await episodesRepository.find({ podcast });
         episodeId = episode.id;
       });
-      it("should success to delete Episode", () => {
+      it('should success to delete Episode', () => {
         return publicTest(`
             mutation {
               deleteEpisode(input: { podcastId: ${podcastId}, episodeId: ${episodeId} }) {
@@ -466,14 +466,14 @@ describe("App (e2e)", () => {
             const {
               body: {
                 data: {
-                  deleteEpisode: { ok }
-                }
-              }
+                  deleteEpisode: { ok },
+                },
+              },
             } = res;
             expect(ok).toBe(true);
           });
       });
-      it("should fail to delete Episode, because of episode not found", () => {
+      it('should fail to delete Episode, because of episode not found', () => {
         return publicTest(`
             mutation {
               deleteEpisode(input: { podcastId: ${podcastId}, episodeId: ${episodeId} }) {
@@ -487,9 +487,9 @@ describe("App (e2e)", () => {
             const {
               body: {
                 data: {
-                  deleteEpisode: { ok, error }
-                }
-              }
+                  deleteEpisode: { ok, error },
+                },
+              },
             } = res;
             expect(ok).toBe(false);
             expect(error).toBe(
@@ -497,7 +497,7 @@ describe("App (e2e)", () => {
             );
           });
       });
-      it("should fail to delete Episode, because of podcast not found", () => {
+      it('should fail to delete Episode, because of podcast not found', () => {
         const errorPodcastId = 1000;
         return publicTest(`
             mutation {
@@ -512,22 +512,22 @@ describe("App (e2e)", () => {
             const {
               body: {
                 data: {
-                  deleteEpisode: { ok, error }
-                }
-              }
+                  deleteEpisode: { ok, error },
+                },
+              },
             } = res;
             expect(ok).toBe(false);
             expect(error).toBe(`Podcast with id ${errorPodcastId} not found`);
           });
       });
     });
-    describe("deletePodcast", () => {
+    describe('deletePodcast', () => {
       let podcastId: number;
       beforeAll(async () => {
         const [podcast] = await podcastsRepository.find();
         podcastId = podcast.id;
       });
-      it("should success to delete", () => {
+      it('should success to delete', () => {
         return publicTest(`
             mutation {
               deletePodcast(input: { id: ${podcastId} }) {
@@ -541,14 +541,14 @@ describe("App (e2e)", () => {
             const {
               body: {
                 data: {
-                  deletePodcast: { ok }
-                }
-              }
+                  deletePodcast: { ok },
+                },
+              },
             } = res;
             expect(ok).toBe(true);
           });
       });
-      it("should fail to delete, because of podcast not found", () => {
+      it('should fail to delete, because of podcast not found', () => {
         return publicTest(`
             mutation {
               deletePodcast(input: { id: ${podcastId} }) {
@@ -562,9 +562,9 @@ describe("App (e2e)", () => {
             const {
               body: {
                 data: {
-                  deletePodcast: { ok, error }
-                }
-              }
+                  deletePodcast: { ok, error },
+                },
+              },
             } = res;
             expect(ok).toBe(false);
             expect(error).toBe(`Podcast with id ${podcastId} not found`);
@@ -572,9 +572,9 @@ describe("App (e2e)", () => {
       });
     });
   });
-  describe("Users Resolver", () => {
-    describe("createAccount", () => {
-      it("should create a new account", () => {
+  describe('Users Resolver', () => {
+    describe('createAccount', () => {
+      it('should create a new account', () => {
         return publicTest(`
           mutation {
             createAccount(input: {
@@ -593,7 +593,7 @@ describe("App (e2e)", () => {
             expect(res.body.data.createAccount.error).toBe(null);
           });
       });
-      it("should fail if account already exists", () => {
+      it('should fail if account already exists', () => {
         return publicTest(`
             mutation {
               createAccount(input: {
@@ -610,13 +610,13 @@ describe("App (e2e)", () => {
           .expect((res) => {
             expect(res.body.data.createAccount.ok).toBe(false);
             expect(res.body.data.createAccount.error).toBe(
-              "There is a user with that email already"
+              'There is a user with that email already'
             );
           });
       });
     });
-    describe("login", () => {
-      it("should succuess to login", () => {
+    describe('login', () => {
+      it('should succuess to login', () => {
         return publicTest(`
           mutation {
             login(input: {
@@ -634,17 +634,17 @@ describe("App (e2e)", () => {
             const {
               body: {
                 data: {
-                  login: { ok, token }
-                }
-              }
+                  login: { ok, token },
+                },
+              },
             } = res;
             expect(ok).toBe(true);
             expect(token).toEqual(expect.any(String));
             jwtToken = token;
           });
       });
-      it("should fail if user not found", () => {
-        const fakeEmail = "fake@fake.com";
+      it('should fail if user not found', () => {
+        const fakeEmail = 'fake@fake.com';
         return publicTest(`
             mutation {
               login(input: {
@@ -661,16 +661,16 @@ describe("App (e2e)", () => {
             const {
               body: {
                 data: {
-                  login: { ok, error }
-                }
-              }
+                  login: { ok, error },
+                },
+              },
             } = res;
             expect(ok).toBe(false);
-            expect(error).toBe("User not found");
+            expect(error).toBe('User not found');
           });
       });
-      it("should fail if wrong password", () => {
-        const fakePassword = "fakePassword";
+      it('should fail if wrong password', () => {
+        const fakePassword = 'fakePassword';
         return publicTest(`
             mutation {
               login(input: {
@@ -687,17 +687,17 @@ describe("App (e2e)", () => {
             const {
               body: {
                 data: {
-                  login: { ok, error }
-                }
-              }
+                  login: { ok, error },
+                },
+              },
             } = res;
             expect(ok).toBe(false);
-            expect(error).toBe("Wrong password");
+            expect(error).toBe('Wrong password');
           });
       });
     });
-    describe("me", () => {
-      it("should find my profile", () => {
+    describe('me', () => {
+      it('should find my profile', () => {
         return privateTest(`
             {
               me {
@@ -710,14 +710,14 @@ describe("App (e2e)", () => {
             const {
               body: {
                 data: {
-                  me: { email }
-                }
-              }
+                  me: { email },
+                },
+              },
             } = res;
             expect(email).toBe(testUser.email);
           });
       });
-      it("should not allow logged out user", () => {
+      it('should not allow logged out user', () => {
         return publicTest(`
             {
               me {
@@ -728,14 +728,14 @@ describe("App (e2e)", () => {
           .expect(200)
           .expect((res) => {
             const {
-              body: { errors }
+              body: { errors },
             } = res;
             const [error] = errors;
-            expect(error.message).toBe("Forbidden resource");
+            expect(error.message).toBe('Forbidden resource');
           });
       });
     });
-    describe("seeProfile", () => {
+    describe('seeProfile', () => {
       let userId: number;
       beforeAll(async () => {
         const [user] = await usersRepository.find();
@@ -759,16 +759,16 @@ describe("App (e2e)", () => {
                 data: {
                   seeProfile: {
                     ok,
-                    user: { id }
-                  }
-                }
-              }
+                    user: { id },
+                  },
+                },
+              },
             } = res;
             expect(ok).toBe(true);
             expect(id).toBe(userId);
           });
       });
-      it("should fail if user not found", () => {
+      it('should fail if user not found', () => {
         const fakeUserId = 1000;
         return privateTest(`
           {
@@ -782,15 +782,15 @@ describe("App (e2e)", () => {
             const {
               body: {
                 data: {
-                  seeProfile: { ok, error }
-                }
-              }
+                  seeProfile: { ok, error },
+                },
+              },
             } = res;
             expect(ok).toBe(false);
-            expect(error).toBe("User Not Found");
+            expect(error).toBe('User Not Found');
           });
       });
-      it("should not allow logged out user", () => {
+      it('should not allow logged out user', () => {
         return publicTest(`
             {
               seeProfile(userId: ${userId}) {
@@ -801,23 +801,23 @@ describe("App (e2e)", () => {
           .expect(200)
           .expect((res) => {
             const {
-              body: { errors }
+              body: { errors },
             } = res;
             const [error] = errors;
-            expect(error.message).toBe("Forbidden resource");
+            expect(error.message).toBe('Forbidden resource');
           });
       });
     });
-    describe("editProfile", () => {
+    describe('editProfile', () => {
       const updateArgs = {
-        password: "updatePassword"
+        password: 'updatePassword',
       };
       let userId: number;
       beforeAll(async () => {
         const [user] = await usersRepository.find();
         userId = user.id;
       });
-      it("should success to update profile", () => {
+      it('should success to update profile', () => {
         return privateTest(`
           mutation {
             editProfile(input: { password: "${updateArgs.password}" }) {
@@ -831,9 +831,9 @@ describe("App (e2e)", () => {
             const {
               body: {
                 data: {
-                  editProfile: { ok }
-                }
-              }
+                  editProfile: { ok },
+                },
+              },
             } = res;
             expect(ok).toBe(true);
           });
