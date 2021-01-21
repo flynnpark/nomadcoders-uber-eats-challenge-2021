@@ -5,33 +5,40 @@ import { IsInt } from 'class-validator';
 import { Episode } from '../entities/episode.entity';
 
 @ObjectType()
-export class GetAllPodcastsOutput extends CoreOutput {
-  @Field(type => [Podcast], { nullable: true })
+export class PodcastsOutput extends CoreOutput {
+  @Field((type) => [Podcast], { nullable: true })
   podcasts?: Podcast[];
 }
 
 @InputType()
-export class PodcastSearchInput extends PickType(Podcast, ['id'], InputType) {}
+export class GetPodcastInput extends PickType(Podcast, ['id'], InputType) {}
+
+@InputType()
+export class SearchPodcastsInput extends PickType(
+  Podcast,
+  ['title'],
+  InputType
+) {}
 
 @ObjectType()
 export class PodcastOutput extends CoreOutput {
-  @Field(type => Podcast, { nullable: true })
+  @Field((type) => Podcast, { nullable: true })
   podcast?: Podcast;
 }
 
 @ObjectType()
 export class EpisodesOutput extends CoreOutput {
-  @Field(type => [Podcast], { nullable: true })
+  @Field((type) => [Podcast], { nullable: true })
   episodes?: Episode[];
 }
 
 @InputType()
 export class EpisodesSearchInput {
-  @Field(type => Int)
+  @Field((type) => Int)
   @IsInt()
   podcastId: number;
 
-  @Field(type => Int)
+  @Field((type) => Int)
   @IsInt()
   episodeId: number;
 }

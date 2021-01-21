@@ -10,13 +10,14 @@ import { Repository } from 'typeorm';
 import { JwtService } from '../jwt/jwt.service';
 import { UserProfileOutput } from './dtos/user-profile.dto';
 import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
+import { SeeSubscriptionsOutput } from './dtos/see-subscriptions.dto';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly users: Repository<User>,
-    private readonly jwtService: JwtService,
+    private readonly jwtService: JwtService
   ) {}
 
   async createAccount({
@@ -51,7 +52,7 @@ export class UsersService {
     try {
       const user = await this.users.findOne(
         { email },
-        { select: ['id', 'password'] },
+        { select: ['id', 'password'] }
       );
       if (!user) {
         return { ok: false, error: 'User not found' };
@@ -95,7 +96,7 @@ export class UsersService {
 
   async editProfile(
     userId: number,
-    { email, password }: EditProfileInput,
+    { email, password }: EditProfileInput
   ): Promise<EditProfileOutput> {
     try {
       const user = await this.users.findOneOrFail(userId);
@@ -108,6 +109,25 @@ export class UsersService {
         ok: true,
       };
     } catch (error) {
+      return {
+        ok: false,
+        error: 'Could not update profile',
+      };
+    }
+  }
+
+  async getSubscriptions(authUser: User): Promise<SeeSubscriptionsOutput> {
+    try {
+      const user = await this.users.findOne(
+        {
+          id: authUser.id,
+        },
+        {
+          relations: ['podcasts'],
+        }
+      );
+      return { ok: true, podcasts: user.subscribedPodcasts };
+    } catch (e) {
       return {
         ok: false,
         error: 'Could not update profile',
