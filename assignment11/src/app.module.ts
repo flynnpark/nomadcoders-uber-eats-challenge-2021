@@ -14,13 +14,19 @@ import { AuthModule } from "./auth/auth.module";
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: "sqlite",
-      database: "db.sqlite3",
+      type: "postgres",
+      host: process.env.DB_HOST,
+      port: 5432,
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_DATABASE,
+      ssl: { rejectUnauthorized: false },
       synchronize: true,
       logging: process.env.NODE_ENV !== "test",
       entities: [Podcast, Episode, User, Review]
     }),
     GraphQLModule.forRoot({
+      playground: true,
       autoSchemaFile: true,
       context: ({ req }) => {
         return { user: req["user"] };
