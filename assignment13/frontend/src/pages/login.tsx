@@ -126,7 +126,7 @@ export default function Login() {
             to="/sign-up"
             className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md bg-white text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 align-middle"
           >
-            Sign-Up
+            Sign Up
           </NavLink>
           {loginMutationResult?.login.error && (
             <FormError errorMessage={loginMutationResult.login.error} />
