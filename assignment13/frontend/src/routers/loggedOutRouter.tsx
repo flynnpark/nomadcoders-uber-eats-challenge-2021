@@ -1,16 +1,23 @@
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Redirect,
+  Route,
+  Switch,
+} from 'react-router-dom';
 import Login from '../pages/login';
+import SignUp from '../pages/signup';
 
 export default function LoggedOutRouter() {
   return (
     <Router>
       <Switch>
         <Route path="/sign-up">
-          <>SignUp</>
+          <SignUp />
         </Route>
-        <Route path="/">
+        <Route exact path="/">
           <Login />
         </Route>
+        <Redirect to="/" />
       </Switch>
     </Router>
   );

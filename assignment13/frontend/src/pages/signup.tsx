@@ -1,53 +1,57 @@
 import { gql, useMutation } from '@apollo/client';
 import { useForm } from 'react-hook-form';
-import { NavLink } from 'react-router-dom';
-import { authTokenVar, isLoggedInVar } from '../apollo';
+import { useHistory } from 'react-router-dom';
 import FormError from '../components/FormError';
-import { LOCALSTORAGE_TOKEN } from '../constants';
 import {
-  loginMutation,
-  loginMutationVariables,
-} from '../__generated__/loginMutation';
+  createAccountMutation,
+  createAccountMutationVariables,
+} from '../__generated__/createAccountMutation';
+import { UserRole } from '../__generated__/globalTypes';
 
-const LOGIN_MUTATION = gql`
-  mutation loginMutation($loginInput: LoginInput!) {
-    login(input: $loginInput) {
+const SIGNUP_MUTATAION = gql`
+  mutation createAccountMutation($input: CreateAccountInput!) {
+    createAccount(input: $input) {
       ok
-      token
       error
     }
   }
 `;
 
-interface LoginForm {
+interface SignUpForm {
   email: string;
   password: string;
+  role: UserRole;
   resultError?: string;
 }
 
-export default function Login() {
-  const { register, getValues, errors, handleSubmit } = useForm<LoginForm>();
+export default function SignUp() {
+  const history = useHistory();
+  const { register, getValues, errors, handleSubmit } = useForm<SignUpForm>();
 
-  const [loginMutation, { data: loginMutationResult, loading }] = useMutation<
-    loginMutation,
-    loginMutationVariables
-  >(LOGIN_MUTATION, {
-    onCompleted: (data: loginMutation) => {
-      const {
-        login: { ok, token },
-      } = data;
-      if (ok && token) {
-        localStorage.setItem(LOCALSTORAGE_TOKEN, token);
-        authTokenVar(token);
-        isLoggedInVar(true);
-      }
-    },
-  });
+  const [
+    createAccountMutation,
+    { data: createAccountMutationResult, loading },
+  ] = useMutation<createAccountMutation, createAccountMutationVariables>(
+    SIGNUP_MUTATAION,
+    {
+      onCompleted: (data: createAccountMutation) => {
+        const {
+          createAccount: { ok },
+        } = data;
+        if (ok) {
+          alert('Account created! Please log in now!');
+          history.push('/');
+        }
+      },
+    }
+  );
 
   const onSubmit = () => {
     if (!loading) {
-      const { email, password } = getValues();
-      loginMutation({ variables: { loginInput: { email, password } } });
+      const { email, password, role } = getValues();
+      createAccountMutation({
+        variables: { input: { email, password, role } },
+      });
     }
   };
 
@@ -55,7 +59,7 @@ export default function Login() {
     <div className="h-screen flex items-center justify-center bg-gray-800">
       <div className="w-full max-w-lg pt-7 pb-12 rounded-lg text-center">
         <h3 className="mt-6 text-center text-3xl font-extrabold text-white">
-          Log In
+          Sign Up
         </h3>
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -98,6 +102,21 @@ export default function Login() {
               )}
             </div>
           </div>
+          <div>
+            <select
+              ref={register({ required: 'Role is required' })}
+              required
+              name="role"
+              placeholder="role"
+              className="rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+            >
+              {Object.keys(UserRole).map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </div>
           <button className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 align-middle">
             {loading ? (
               <>
@@ -119,17 +138,13 @@ export default function Login() {
                 Loading...
               </>
             ) : (
-              'Log In'
+              'Sign Up'
             )}
           </button>
-          <NavLink
-            to="/sign-up"
-            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md bg-white text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 align-middle"
-          >
-            Sign-Up
-          </NavLink>
-          {loginMutationResult?.login.error && (
-            <FormError errorMessage={loginMutationResult.login.error} />
+          {createAccountMutationResult?.createAccount.error && (
+            <FormError
+              errorMessage={createAccountMutationResult.createAccount.error}
+            />
           )}
         </form>
       </div>
