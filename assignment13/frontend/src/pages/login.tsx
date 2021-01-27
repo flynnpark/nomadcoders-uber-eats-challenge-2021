@@ -52,8 +52,8 @@ export default function Login() {
 
   return (
     <div className="h-screen flex items-center justify-center bg-gray-800">
-      <div className="bg-white w-full max-w-lg pt-7 pb-12 rounded-lg text-center">
-        <h3 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+      <div className="w-full max-w-lg pt-7 pb-12 rounded-lg text-center">
+        <h3 className="mt-6 text-center text-3xl font-extrabold text-white">
           Log In
         </h3>
         <form
