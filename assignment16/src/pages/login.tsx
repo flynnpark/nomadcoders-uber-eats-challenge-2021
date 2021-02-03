@@ -11,7 +11,7 @@ import {
   LoginMutationVariables,
 } from '../__type_graphql__/LoginMutation';
 
-const LOGIN_MUTATION = gql`
+export const LOGIN_MUTATION = gql`
   mutation LoginMutation($loginInput: LoginInput!) {
     login(input: $loginInput) {
       ok
@@ -37,30 +37,27 @@ export const Login = () => {
     mode: 'onChange',
   });
 
-  const onCompleted = (data: LoginMutation) => {
-    const {
-      login: { ok, token },
-    } = data;
-
-    if (ok && token) {
-      localStorage.setItem(LS_TOKEN, token);
-      authTokenVar(token);
-      isLoggedInVar(true);
-    }
-  };
-  const variables = {
-    loginInput: getValues(),
-  };
   const [loginMutation, { data: loginMutationResult, loading }] = useMutation<
     LoginMutation,
     LoginMutationVariables
   >(LOGIN_MUTATION, {
-    variables,
-    onCompleted,
+    onCompleted: (data: LoginMutation) => {
+      const {
+        login: { ok, token },
+      } = data;
+      if (ok && token) {
+        localStorage.setItem(LS_TOKEN, token);
+        authTokenVar(token);
+        isLoggedInVar(true);
+      }
+    },
   });
 
-  const _submit = () => {
-    if (!loading) loginMutation();
+  const onSubmit = () => {
+    if (!loading) {
+      const { email, password } = getValues();
+      loginMutation({ variables: { loginInput: { email, password } } });
+    }
   };
 
   return (
@@ -70,7 +67,6 @@ export const Login = () => {
       </Helmet>
       <div className="bg-white shadow-2xl rounded-lg w-full max-w-3xl mx-5 flex justify-between">
         <div className="hidden sm:block sm:w-7/12 bg-gradient-to-tr from-green-400 to-blue-400  flex justify-center items-center rounded-tl-lg rounded-bl-lg">
-          {' '}
           {/*Right Side*/}
           <div className="w-full h-full flex flex-col justify-center text-white text-right p-6">
             <h3 className="text-4xl font-medium">Wanna listen?</h3>
@@ -80,13 +76,12 @@ export const Login = () => {
           </div>
         </div>
         <div className="w-full sm:w-5/12 py-16">
-          {' '}
           {/*Left Side*/}
           <h3 className="text-blue-400 text-3xl text-center mb-10 font-medium">
             Nuber-Podcasts
           </h3>
           <form
-            onSubmit={handleSubmit(_submit)}
+            onSubmit={handleSubmit(onSubmit)}
             className="w-full flex flex-col px-14"
           >
             <div className="border-b-2 border-blue-400 py-2 bg-transparent flex">
@@ -107,6 +102,10 @@ export const Login = () => {
               <input
                 ref={register({
                   required: 'Email is required!',
+                  pattern: {
+                    value: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                    message: 'Please enter a valid email',
+                  },
                 })}
                 className="focus:outline-none pl-2 w-full"
                 name="email"
@@ -149,10 +148,10 @@ export const Login = () => {
             {errors.password?.type === 'minLength' && (
               <FormError errorMessage="Password must be more than 10 characters" />
             )}
-
             <Button
+              type="submit"
               className="mt-12"
-              canClick={formState.isValid}
+              disabled={!formState.isValid}
               loading={loading}
               actionText="Login"
             />

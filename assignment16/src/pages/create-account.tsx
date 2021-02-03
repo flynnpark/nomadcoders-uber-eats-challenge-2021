@@ -196,7 +196,7 @@ export const CreateAccount = () => {
           </select>
           <Button
             className="mt-12"
-            canClick={formState.isValid}
+            disabled={!formState.isValid}
             loading={loading}
             actionText="Create Account"
           />
