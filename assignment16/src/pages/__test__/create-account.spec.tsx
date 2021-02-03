@@ -1,11 +1,11 @@
-import { render, waitFor } from "../../test-utils";
-import React from "react";
-import { ApolloProvider } from "@apollo/client";
-import { RenderResult } from "@testing-library/react";
-import { createMockClient, MockApolloClient } from "mock-apollo-client";
-import { CreateAccount } from "../create-account";
+import { render, waitFor } from '../../test-utils';
+import React from 'react';
+import { ApolloProvider } from '@apollo/client';
+import { RenderResult } from '@testing-library/react';
+import { createMockClient, MockApolloClient } from 'mock-apollo-client';
+import { CreateAccount } from '../create-account';
 
-describe("<CreateAccount />", () => {
+describe('<CreateAccount />', () => {
   let mockedClient: MockApolloClient;
   let renderResult: RenderResult;
   beforeEach(async () => {
@@ -18,5 +18,5 @@ describe("<CreateAccount />", () => {
       );
     });
   });
-  it("renders OK", async () => {});
+  it('renders OK', async () => {});
 });
