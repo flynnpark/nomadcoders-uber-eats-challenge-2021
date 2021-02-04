@@ -18,5 +18,7 @@ describe('<Podcasts />', () => {
       );
     });
   });
-  it('renders OK', async () => {});
+  it('renders OK', async () => {
+    await waitFor(() => expect(document.title).toBe('Home | Nuber-podcasts'))
+  });
 });

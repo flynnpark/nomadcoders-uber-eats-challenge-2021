@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { createMockClient, MockApolloClient } from 'mock-apollo-client';
 import React from 'react';
 import { render, waitFor } from '../../test-utils';
+import { UserRole } from '../../__type_graphql__/globalTypes';
 import { CreateAccount, CREATE_ACCOUNT_MUTATION } from '../create-account';
 
 const mockPush = jest.fn();
@@ -95,6 +96,7 @@ describe('<CreateAccount />', () => {
       email: 'test@test.com',
       password: '1234567890',
       confirm: '1234567890',
+      role: UserRole.Host,
     };
     const mockedMutationResponse = jest.fn().mockResolvedValue({
       data: {
@@ -120,11 +122,12 @@ describe('<CreateAccount />', () => {
       createAccountInput: {
         email: formData.email,
         password: formData.password,
+        role: formData.role,
       },
     });
     expect(window.alert).toHaveBeenCalledWith('Account Created! Log in now!');
     const mutationError = getByRole('alert');
     expect(mockPush).toHaveBeenCalledWith('/');
-    expect(mutationError).toHaveTextContent('mutation-error');
+    expect(mutationError).toHaveTextContent('mutationError');
   });
 });
