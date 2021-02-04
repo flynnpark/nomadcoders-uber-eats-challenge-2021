@@ -10,7 +10,7 @@ import {
 } from '../__type_graphql__/CreateAccountMutation';
 import { UserRole } from '../__type_graphql__/globalTypes';
 
-const CREATE_ACCOUNT_MUTATION = gql`
+export const CREATE_ACCOUNT_MUTATION = gql`
   mutation CreateAccountMutation($createAccountInput: CreateAccountInput!) {
     createAccount(input: $createAccountInput) {
       ok
@@ -34,37 +34,37 @@ export const CreateAccount = () => {
     getValues,
     formState,
   } = useForm<ICreateAccountFrom>({
-    mode: 'onBlur',
+    mode: 'onChange',
     defaultValues: {
       role: UserRole.Host,
     },
   });
   const history = useHistory();
-  const onCompleted = (data: CreateAccountMutation) => {
-    const {
-      createAccount: { ok },
-    } = data;
-
-    if (ok) {
-      alert('Account Created! Log in now!');
-      history.push('/');
-    }
-  };
-  const { email, password, role } = getValues();
   const [
     createAccountMutation,
     { data: createAccountResult, loading },
   ] = useMutation<CreateAccountMutation, CreateAccountMutationVariables>(
     CREATE_ACCOUNT_MUTATION,
     {
-      variables: {
-        createAccountInput: { email, password, role },
+      onCompleted: (data: CreateAccountMutation) => {
+        const {
+          createAccount: { ok },
+        } = data;
+
+        if (ok) {
+          alert('Account Created! Log in now!');
+          history.push('/');
+        }
       },
-      onCompleted,
     }
   );
-  const _submit = () => {
-    if (!loading) createAccountMutation();
+  const onSubmit = () => {
+    if (!loading) {
+      const { email, password, role } = getValues();
+      createAccountMutation({
+        variables: { createAccountInput: { email, password, role } },
+      });
+    }
   };
   return (
     <div className="h-screen flex justify-center items-center bg-gray-50">
@@ -76,7 +76,7 @@ export const CreateAccount = () => {
           Create Account
         </h3>
         <form
-          onSubmit={handleSubmit(_submit)}
+          onSubmit={handleSubmit(onSubmit)}
           className="w-full flex flex-col px-6"
         >
           <div className="mb-2 flex align-center text-blue-400">
@@ -195,6 +195,7 @@ export const CreateAccount = () => {
             ))}
           </select>
           <Button
+            type="submit"
             className="mt-12"
             disabled={!formState.isValid}
             loading={loading}
