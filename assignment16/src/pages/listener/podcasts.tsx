@@ -4,13 +4,18 @@ import { Link } from 'react-router-dom';
 import { PODCAST_FRAGMENT } from '../../fragments';
 import { getAllPodcastQuery } from '../../__type_graphql__/getAllPodcastQuery';
 
-const ALLPODCASTS_QUERY = gql`
+export const ALLPODCASTS_QUERY = gql`
   query getAllPodcastQuery {
     getAllPodcasts {
       ok
       error
       podcasts {
-        ...PodcastParts
+        id
+        title
+        category
+        thumbnailUrl
+        description
+        rating
       }
     }
   }
@@ -28,8 +33,8 @@ export const Podcasts = () => {
       <div className="w-full px-5 xl:px-0 mx-auto max-w-screen-xl grid md:grid-cols-2 xl:grid-cols-4 gap-7">
         {data?.getAllPodcasts.podcasts?.map((podcast) => (
           <Link
-            to={`/podcasts/${podcast.id}`}
             key={podcast.id}
+            to={`/podcasts/${podcast.id}`}
             className="relative group"
           >
             <div className="p-8 border-2 border-blue-400 rounded-md h-full">

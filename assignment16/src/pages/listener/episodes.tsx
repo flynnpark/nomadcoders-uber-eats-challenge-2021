@@ -7,13 +7,16 @@ import {
   getEpisodesVariables,
 } from '../../__type_graphql__/getEpisodes';
 
-const GET_EPISODES_QUERY = gql`
+export const GET_EPISODES_QUERY = gql`
   query getEpisodes($input: PodcastSearchInput!) {
     getPodcast(input: $input) {
       ok
       error
       podcast {
-        ...PodcastParts
+        id
+        title
+        thumbnailUrl
+        description
       }
     }
     getEpisodes(input: $input) {
@@ -25,7 +28,6 @@ const GET_EPISODES_QUERY = gql`
       }
     }
   }
-  ${PODCAST_FRAGMENT}
 `;
 
 interface IEpisodeParams {
@@ -82,7 +84,10 @@ export const Episodes = () => {
       </div>
       <div className="grid grid-cols-1 gap-3">
         {data?.getEpisodes.episodes?.map((episode) => (
-          <div className="w-full border-2 border-blue-400 rounded-lg px-4 md:px-16 py-3 flex justify-between items-center">
+          <div
+            key={episode.title}
+            className="w-full border-2 border-blue-400 rounded-lg px-4 md:px-16 py-3 flex justify-between items-center"
+          >
             <div className="mr-2 md:mr-8">
               <h2 className="font-semibold font-lg">{episode.title}</h2>
               <h3 className="font-md"> - {episode.description}</h3>
